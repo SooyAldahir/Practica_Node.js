@@ -1,0 +1,112 @@
+<%- include("template/header", {tituloweb:'Detalle categoria'}) %>
+
+    <div class="container">
+        <h1>Detalle producto</h1>
+        <% if (error) { %>
+            <%= mensaje %>
+                <a href="/categorias" class="btn btn-dark btn-block my-2">
+                    Volver
+                </a>
+                <% } %>
+
+                    <% if (!error) { %>
+
+                        <form id="formularioEditar" data-id=<%=categoria.id %>>
+
+                            <input type="text" class="form-control my-2 " name="nombre" value="<%= categoria.nombre %>"
+                                id="nombreInput">
+                            <input type="text" class="form-control my-2 " name="descripcion"
+                                value="<%= categoria.descripcion %>" id="descripcionInput">
+
+                            <button class="btn btn-warning btn-block" type="submit">
+                                Editar
+                            </button>
+
+                        </form>
+
+                        <hr>
+
+                        <button class="btn btn-danger" , id="btnEliminar" data-id="<%= categoria.id %>">
+
+                            Eliminar
+                        </button>
+
+
+                        <% } %>
+
+
+    </div>
+
+    <%- include('template/footer'); %>
+
+        <script>
+            const btnEliminar = document.querySelector('#btnEliminar')
+            btnEliminar.addEventListener('click', async () => {
+                console.log('Me diste click')
+                const id = btnEliminar.dataset.id
+                try {
+
+                    const data = await fetch(`/categorias/${id}`, {
+                        method: 'delete'
+                    })
+
+                    const res = await data.json()
+
+                    if (res.estado) {
+                        window.location.href = '/categorias'
+                    }
+                    else {
+                        console.log(res)
+                    }
+
+
+                } catch (error) {
+                    console.log(error)
+
+                }
+            })
+
+            //editar formulario 
+            const formularioEditar = document.querySelector('#formularioEditar')
+            formularioEditar.addEventListener('submit', async (e) => {
+                e.preventDefault()
+
+                const nombre = document.querySelector('#nombreInput').value
+                const descripcion = document.querySelector('#descripcionInput').value
+
+                //const nombre =formularioEditar.element['nombre'].value
+                //const descripcion =formularioEditar.element['descripcion'].value
+                const id = formularioEditar.dataset.id
+
+                try {
+                    const data = await fetch(`/categorias/${id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ nombre, descripcion })
+
+                    })
+
+                    const res = await data.json()
+                    //console.log(res)
+
+                    if (res.estado) {
+                        window.location.href = '/categorias'
+
+                    } else {
+                        console.log(res)
+
+                    }
+
+
+
+                } catch (error) {
+                    console.log(error)
+
+                }
+
+
+
+            })
+        </script>
